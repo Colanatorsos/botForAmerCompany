@@ -1,0 +1,30 @@
+import discord
+import selfcord
+import logging
+import asyncio
+
+from config import Config
+from database import Database
+
+from parser_client import ParserClient
+from discord_client import DiscordClient
+
+logging.basicConfig(level=logging.INFO)
+
+
+async def main():
+    database = Database("database.sqlite3")
+
+    discord_client = DiscordClient(database, intents=discord.Intents.default())
+    parser_client = ParserClient(database, discord_client)
+
+    await asyncio.gather(
+        parser_client.start(Config.SELFBOT_TOKEN),
+        discord_client.start(Config.BOT_TOKEN)
+    )
+
+    database.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

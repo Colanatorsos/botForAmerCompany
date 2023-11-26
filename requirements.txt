@@ -1,0 +1,2 @@
+discord.py==2.3.2
+selfcord.py[voice] @ git+https://github.com/dolfies/discord.py-self@renamed#egg=selfcord.py[voice]
