@@ -16,6 +16,9 @@ class ParserClient(selfcord.Client):
         print(f"Logged in as {self.user}")
 
     async def on_message(self, message: selfcord.Message):
+        if message.author.id == self.discord_client.user.id:
+            return
+
         post_channel_ids = self.database.get_post_channel_ids(message.channel.id)
 
         if len(post_channel_ids) == 0:

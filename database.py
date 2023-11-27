@@ -29,3 +29,11 @@ class Database:
     def get_post_channel_ids(self, parse_channel_id: int) -> list[tuple[int]]:
         self.cur.execute("SELECT post_channel_id FROM parse_channels WHERE parse_channel_id = ?", (parse_channel_id,))
         return self.cur.fetchall()
+
+    def drop_all_parse_channels(self):
+        self.cur.execute("DELETE FROM parse_channels")
+        self.db.commit()
+
+    def get_all_parse_channels(self) -> list[tuple[int, int]]:
+        self.cur.execute("SELECT * FROM parse_channels")
+        return self.cur.fetchall()
