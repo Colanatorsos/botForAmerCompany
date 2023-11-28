@@ -54,10 +54,29 @@ class ParserClient(selfcord.Client):
                 print(f"Could not find post channel with ID {post_channel_id}")
                 continue
 
-            await channel.send(
+            parsed_message = await channel.send(
                 content=content,
                 embeds=embeds,
                 files=files,
                 view=view,
                 stickers=stickers,
             )
+            self.database.add_parsed_message(parsed_message.channel.id, message.id, parsed_message.id)
+
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        parsed_messages = self.database.get_parsed_messages(after.id)
+
+        if len(parsed_messages) == 0:
+            return
+
+        for parsed_message in parsed_messages:
+            try:
+                channel = self.discord_client.get_channel(parsed_message[0])
+                message = await channel.fetch_message(parsed_message[1])
+                await message.edit(
+                    content=after.content,
+                    embeds=after.embeds
+                )
+            except Exception as ex:
+                print(ex)
+                print(f"Failed to handle parsed message: {parsed_message}")
