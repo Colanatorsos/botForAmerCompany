@@ -1,2 +1,7 @@
+beautifulsoup4==4.12.2
 discord.py==2.3.2
-selfcord.py[voice] @ git+https://github.com/dolfies/discord.py-self@renamed#egg=selfcord.py[voice]
+Requests==2.31.0
+
+# Forked version of discord.py-self renamed branch (selfcord)
+# discord.py-self still didn't fix the bug so had to fix it myself
+git+https://github.com/WhoIsDanix/discord.py-self@renamed#egg=selfcord.py[voice]

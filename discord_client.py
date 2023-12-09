@@ -1,15 +1,21 @@
 import discord
 import math
+import asyncio
+
 from discord.ext.commands import Bot
 
 from database import Database
 from config import Config
+
+from datetime import datetime
+from finviz_api import get_stock_data
 
 
 class DiscordClient(Bot):
     def __init__(self, database: Database, **kwargs):
         super().__init__(command_prefix="/", **kwargs)
         self.database = database
+        self.parser_client = None
         self.setup_commands()
 
     async def on_ready(self):
@@ -58,7 +64,17 @@ class DiscordClient(Bot):
                 return await interaction.followup.send("❌ Эта страница пуста.")
 
             total_pages = math.ceil(len(parse_channels) / ITEMS_PER_PAGE)
-            parse_channels_visualization = "\n".join([f"{parse_channel[0]} -> {parse_channel[1]}" for parse_channel in page_parse_channels])
+            discord_page_parse_channels = []
+
+            for parse_channel in parse_channels:
+                discord_post_channel = self.get_channel(parse_channel[0])
+                discord_parse_channel = self.parser_client.get_channel(parse_channel[1])
+                discord_page_parse_channels.append((discord_post_channel, discord_parse_channel))
+
+            parse_channels_visualization = "\n".join([
+                f"**#{parse_channel[1].name}** ({parse_channel[1].id}) -> **#{parse_channel[0].name}** ({parse_channel[0].id})"
+                for parse_channel in discord_page_parse_channels
+            ])
             response_content = f"**Текущие соединения** (Страница {page}, всего страниц - {total_pages}):\n\n{parse_channels_visualization}"
 
             await interaction.followup.send(response_content)
@@ -68,3 +84,27 @@ class DiscordClient(Bot):
             await interaction.response.defer(ephemeral=True)
             self.database.drop_all_parse_channels()
             await interaction.followup.send("✅ Все соединения были успешно сброшены.")
+
+        @self.tree.command(name="stock")
+        async def stock(interaction: discord.Interaction, name: str):
+            await interaction.response.defer(ephemeral=True)
+
+            data = get_stock_data(name)
+
+            if data.get("error") == "no data":
+                return await interaction.followup.send("❌ Couldn't fetch the data.")
+
+            embed = discord.Embed(color=discord.Color.random(), timestamp=datetime.now())
+
+            keys = [
+                "Market Cap", "Price", "Avg Volume", "Shortable",
+                "Shs Float", "Optionable", "Insider Own", "Inst Own",
+                "Short Float / Ratio", "Target Price"
+            ]
+
+            for i in range(len(keys)):
+                embed.add_field(name=keys[i], value=data[keys[i]], inline=True)
+
+            embed.set_image(url=data["Chart URL"])
+
+            await interaction.followup.send(embed=embed)

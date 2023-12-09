@@ -15,15 +15,7 @@ class ParserClient(selfcord.Client):
     async def on_ready(self):
         print(f"Logged in as {self.user}")
 
-    async def on_message(self, message: selfcord.Message):
-        if message.author.id == self.discord_client.user.id:
-            return
-
-        post_channel_ids = self.database.get_post_channel_ids(message.channel.id)
-
-        if len(post_channel_ids) == 0:
-            return
-
+    async def copy_message(self, message: selfcord.Message, post_channel_ids: list[tuple[int]]):
         content = message.content
         embeds = message.embeds
         files = []
@@ -62,6 +54,17 @@ class ParserClient(selfcord.Client):
                 stickers=stickers,
             )
             self.database.add_parsed_message(parsed_message.channel.id, message.id, parsed_message.id)
+
+    async def on_message(self, message: selfcord.Message):
+        if message.author.id == self.discord_client.user.id:
+            return
+
+        post_channel_ids = self.database.get_post_channel_ids(message.channel.id)
+
+        if len(post_channel_ids) == 0:
+            return
+
+        await self.copy_message(message, post_channel_ids)
 
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         parsed_messages = self.database.get_parsed_messages(after.id)
