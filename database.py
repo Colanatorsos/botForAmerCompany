@@ -1,7 +1,4 @@
 import sqlite3
-from datetime import datetime
-
-sqlite3.register_converter("TIMESTAMP", sqlite3.converters["DATE"])
 
 
 class Database:
