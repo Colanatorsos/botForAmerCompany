@@ -1,4 +1,5 @@
 import requests
+import time
 
 from dataclasses import dataclass
 from bs4 import BeautifulSoup
@@ -33,6 +34,6 @@ def get_stock_data(name: str, with_chart: bool = True):
             data[name_el.text] = value_el.text
 
     if with_chart:
-        data["Chart URL"] = f"https://charts2.finviz.com/chart.ashx?t={name}&ty=c&ta=1&p=d&s=l"
+        data["Chart URL"] = f"https://charts2.finviz.com/chart.ashx?t={name}&ty=c&ta=1&p=d&s=l&timestamp={time.time()}"
 
     return data
