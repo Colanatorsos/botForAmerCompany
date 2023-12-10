@@ -8,7 +8,7 @@ from database import Database
 from config import Config
 
 from datetime import datetime
-from finviz_api import get_stock_data
+from finviz_api import login_finviz, get_stock_data
 
 
 class DiscordClient(Bot):
@@ -21,9 +21,17 @@ class DiscordClient(Bot):
     async def on_ready(self):
         print(f"Logged in as {self.user}")
 
+        try:
+            login_finviz()
+            print("Logged in Finviz.")
+        except Exception as ex:
+            print(ex)
+            print("Failed to log in Finviz.")
+
         guild = discord.Object(id=Config.GUILD_ID)
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
+        print("Synced commands for the guild.")
 
     def setup_commands(self):
         @self.tree.command(name="add-parse-channel")

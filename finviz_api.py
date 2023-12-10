@@ -12,8 +12,12 @@ session.headers.update({
     "User-Agent": "Mozilla/5.0 (Linux; Android 6.0.1; SM-A500H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Mobile Safari/537.36"
 })
 
-if Config.FINVIZ_AUTH_COOKIE_TOKEN is not None:
-    session.headers.update({"Cookie": f".ASPXAUTH={Config.FINVIZ_AUTH_COOKIE_TOKEN}"})
+
+def login_finviz():
+    session.post("https://finviz.com/login_submit.ashx", data={
+        "email": Config.FINVIZ_EMAIL,
+        "password": Config.FINVIZ_PASSWORD
+    }).raise_for_status()
 
 
 def get_stock_data(name: str, with_chart: bool = True):
