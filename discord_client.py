@@ -103,6 +103,10 @@ class DiscordClient(Bot):
                 return await interaction.followup.send("❌ Couldn't fetch the data.")
 
             embed = discord.Embed(color=discord.Color.random(), timestamp=datetime.now())
+            view = discord.ui.View()
+
+            view.add_item(discord.ui.Button(label="📰 News", url=data["Last News URL"]))
+            view.add_item(discord.ui.Button(label="📈 TradingView", url=data["URL"]))
 
             keys = [
                 "Market Cap", "Price", "Avg Volume", "Shortable",
@@ -115,4 +119,4 @@ class DiscordClient(Bot):
 
             embed.set_image(url=data["Chart URL"])
 
-            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed, view=view)

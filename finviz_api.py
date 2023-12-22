@@ -21,7 +21,9 @@ def login_finviz():
 
 
 def get_stock_data(name: str, with_chart: bool = True):
-    resp = session.get(f"https://finviz.com/quote.ashx?t={name}&p=d")
+    url = f"https://finviz.com/quote.ashx?t={name}&p=d"
+
+    resp = session.get(url)
     soup = BeautifulSoup(resp.text, "html.parser")
 
     data = {}
@@ -31,6 +33,11 @@ def get_stock_data(name: str, with_chart: bool = True):
         data["error"] = "no data"
         return data
     else:
+        last_news_url = soup.find("a", attrs={"class": "tab-link-news"}).attrs["href"]
+
+        data["URL"] = url
+        data["Last News URL"] = last_news_url
+
         for i in range(0, len(data_elements) - 1, 2):
             name_el = data_elements[i]
             value_el = data_elements[i + 1]
