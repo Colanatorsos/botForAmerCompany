@@ -1,6 +1,6 @@
 import discord
 import math
-import asyncio
+import io
 
 from discord.ext.commands import Bot
 
@@ -9,6 +9,7 @@ from config import Config
 
 from datetime import datetime
 from finviz_api import login_finviz, get_stock_data
+from tradingview_parser import TradingViewParser
 
 
 class DiscordClient(Bot):
@@ -19,19 +20,27 @@ class DiscordClient(Bot):
         self.setup_commands()
 
     async def on_ready(self):
-        print(f"Logged in as {self.user}")
+        print(f"[DiscordClient] Logged in as {self.user}")
 
         try:
             login_finviz()
-            print("Logged in Finviz.")
+            print("[DiscordClient] Logged in Finviz")
         except Exception as ex:
+            print("[DiscordClient] Failed to log in Finviz")
             print(ex)
-            print("Failed to log in Finviz.")
+        
+        try:
+            parser = TradingViewParser()
+            parser.log_in(Config.TRADINGVIEW_EMAIL, Config.TRADINGVIEW_PASSWORD)
+            parser.quit()
+        except Exception as ex:
+            print("[DiscordClient] Failed to log in TradingView")
+            print(ex)
 
         guild = discord.Object(id=Config.GUILD_ID)
         self.tree.copy_global_to(guild=guild)
         await self.tree.sync(guild=guild)
-        print("Synced commands for the guild.")
+        print("[DiscordClient] Synced commands for the guild.")
 
     def setup_commands(self):
         @self.tree.command(name="add-parse-channel")
@@ -120,3 +129,18 @@ class DiscordClient(Bot):
             embed.set_image(url=data["Chart URL"])
 
             await interaction.followup.send(embed=embed, view=view)
+        
+        @self.tree.command(name="future")
+        @discord.app_commands.choices(symbol=[
+            discord.app_commands.Choice(name="nq1!", value="nq1!")
+        ])
+        async def future(interaction: discord.Interaction, symbol: str):
+            await interaction.response.defer(ephemeral=True)
+
+            parser = TradingViewParser()
+            image_data = parser.get_chart_screenshot(symbol)
+
+            file = discord.File(io.BytesIO(image_data), "chart.png")
+
+            await interaction.followup.send(file=file)
+            parser.quit()
