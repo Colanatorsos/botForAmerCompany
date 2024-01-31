@@ -15,6 +15,7 @@ service = webdriver.ChromeService(executable_path=Config.CHROMEDRIVER_BINARY_LOC
 options.binary_location = Config.CHROME_BINARY_LOCATION
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("detach", True)
 
