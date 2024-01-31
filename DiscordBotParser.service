@@ -1,17 +1,14 @@
 [Unit]
-
 Description=Bot launch
+After=syslog.target
 
 [Service]
-
 Type=simple
-
 Restart=always
-
 WorkingDirectory=/home/DiscordBotParser
-
 ExecStart=python3 /home/DiscordBotParser/main.py
+StandardOutput=syslog
+StandardError=syslog
 
 [Install]
-
 WantedBy=multi-user.target
