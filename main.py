@@ -29,13 +29,15 @@ async def main():
         print("[DiscordClient] Failed to log in Finviz")
         print(ex)
 
+    parser = TradingViewParser()
+
     try:
-        parser = TradingViewParser()
         parser.log_in(Config.TRADINGVIEW_EMAIL, Config.TRADINGVIEW_PASSWORD)
-        parser.quit()
     except Exception as ex:
         print("[DiscordClient] Failed to log in TradingView")
         print(traceback.format_exc())
+    finally:
+        parser.quit()
 
     await asyncio.gather(
         parser_client.start(Config.SELFBOT_TOKEN),
