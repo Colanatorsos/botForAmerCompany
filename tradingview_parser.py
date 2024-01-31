@@ -30,16 +30,17 @@ class TradingViewParser:
     def wait_until(self, method, *, timeout: int = WAIT_FOR_ELEMENT_TIMEOUT, message=""):
         return WebDriverWait(self.driver, timeout).until(method, message)
 
-    def log_in(self, username: str, password: str):
-        self.driver.get("https://ru.tradingview.com")
+    def load_cookies(self):
         self.driver.delete_all_cookies()
-
         try:
             for cookie in pickle.load(open(COOKIES_FILENAME, "rb")):
                 self.driver.add_cookie(cookie)
         except FileNotFoundError:
             print("[TradingViewParser] No cookies found")
 
+    def log_in(self, username: str, password: str):
+        self.driver.get("https://ru.tradingview.com")
+        self.load_cookies()
         self.driver.refresh()
 
         try:
@@ -78,11 +79,24 @@ class TradingViewParser:
 
     def get_chart_screenshot(self, symbol: str):
         self.driver.get(f"https://ru.tradingview.com/chart/?symbol={symbol}")
+        self.load_cookies()
+        self.driver.refresh()
 
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-intervals"))).click()
         self.wait_until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-value='60'][data-role='menuitem']"))).click()
-        self.driver.implicitly_wait(3)
+
+        self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
+        self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
+        self.driver.implicitly_wait(1)
+        self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-title='Super OrderBlock / FVG / BoS Tools by makuchaku & eFe']"))).click()
+
+        hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
+        if hide_indicator_button is not None:
+            hide_indicator_button.click()
+
+        # Hardcoded again (need some way to wait for stuff to load, because hardcoding timeouts is very bad)
+        time.sleep(3)
 
         chart = self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "chart-container")))
         screenshot_data = chart.screenshot_as_png
