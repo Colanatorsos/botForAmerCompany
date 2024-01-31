@@ -8,7 +8,7 @@ from database import Database
 from config import Config
 
 from datetime import datetime
-from finviz_api import login_finviz, get_stock_data
+from finviz_api import get_stock_data
 from tradingview_parser import TradingViewParser
 
 
@@ -21,21 +21,6 @@ class DiscordClient(Bot):
 
     async def on_ready(self):
         print(f"[DiscordClient] Logged in as {self.user}")
-
-        try:
-            login_finviz()
-            print("[DiscordClient] Logged in Finviz")
-        except Exception as ex:
-            print("[DiscordClient] Failed to log in Finviz")
-            print(ex)
-        
-        try:
-            parser = TradingViewParser()
-            parser.log_in(Config.TRADINGVIEW_EMAIL, Config.TRADINGVIEW_PASSWORD)
-            parser.quit()
-        except Exception as ex:
-            print("[DiscordClient] Failed to log in TradingView")
-            print(ex)
 
         guild = discord.Object(id=Config.GUILD_ID)
         self.tree.copy_global_to(guild=guild)
