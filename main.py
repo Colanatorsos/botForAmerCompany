@@ -1,6 +1,7 @@
 import discord
 import logging
 import asyncio
+import traceback
 
 from config import Config
 from database import Database
@@ -34,7 +35,7 @@ async def main():
         parser.quit()
     except Exception as ex:
         print("[DiscordClient] Failed to log in TradingView")
-        print(ex)
+        print(traceback.format_exc())
 
     await asyncio.gather(
         parser_client.start(Config.SELFBOT_TOKEN),

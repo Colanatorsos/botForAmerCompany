@@ -71,7 +71,7 @@ class TradingViewParser:
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-overflow-tooltip-text='Войти']"))).click()
 
         # Let cookies load (hardcoded but didn't find any other way to do this)
-        time.sleep(3)
+        time.sleep(5)
 
         pickle.dump(self.driver.get_cookies(), open(COOKIES_FILENAME, "wb"))
         self.quit()
