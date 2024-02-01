@@ -99,7 +99,10 @@ class TradingViewParser:
 
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
-        self.driver.implicitly_wait(1)
+
+        # Wait for items to load (hardcoded AGAIN!!!)
+        time.sleep(3)
+
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-title='Super OrderBlock / FVG / BoS Tools by makuchaku & eFe']"))).click()
 
         hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
