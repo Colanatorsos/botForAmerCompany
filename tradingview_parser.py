@@ -16,10 +16,17 @@ options.binary_location = Config.CHROME_BINARY_LOCATION
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
+options.add_argument("--disable-setuid-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-accelerated-2d-canvas")
+options.add_argument("--no-first-run")
+options.add_argument("--no-zygote")
+options.add_argument("--single-process")
+options.add_argument("--disable-gpu")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("detach", True)
 
-WAIT_FOR_ELEMENT_TIMEOUT = 10
+WAIT_FOR_ELEMENT_TIMEOUT = 15
 COOKIES_FILENAME = "tv_cookies.pkl"
 
 
