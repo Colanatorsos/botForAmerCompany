@@ -131,7 +131,10 @@ class DiscordClient(Bot):
                 image_data = parser.get_chart_screenshot(symbol)
                 parser.quit()
 
-            threading.Thread(target=parse_chart).join()
+            thread = threading.Thread(target=parse_chart)
+            thread.start()
+            thread.join()
+
             file = discord.File(io.BytesIO(image_data), "chart.png")
 
             await interaction.followup.send(file=file)
