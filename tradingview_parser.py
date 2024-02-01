@@ -92,11 +92,19 @@ class TradingViewParser:
 
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-intervals"))).click()
 
+        """
         try:
             self.wait_until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "[data-value='60'][data-role='menuitem']"))).click()
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find 1 hour button element")
+        """
+
+        self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-name='legend-source-interval']"))).click()
+        self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "inputWrapper-UGdC69sw"))).send_keys("60")
+        self.driver.find_element(By.CLASS_NAME, "form-UGdC69sw").submit()
+
+        time.sleep(2)
 
         # self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
         # self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
