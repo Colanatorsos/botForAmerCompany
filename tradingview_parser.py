@@ -105,7 +105,8 @@ class TradingViewParser:
 
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-title='Super OrderBlock / FVG / BoS Tools by makuchaku & eFe']"))).click()
 
-        hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
+        # hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
+        hide_indicator_button = self.driver.find_element(By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")
         if hide_indicator_button is not None:
             hide_indicator_button.click()
 
