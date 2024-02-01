@@ -137,7 +137,6 @@ class TradingViewParser:
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find hide indicator button")
 
-        self.driver.find_element(By.CLASS_NAME, "bg-KTgbfaP5").click()
         time.sleep(1)
 
         chart = self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "chart-container")))
