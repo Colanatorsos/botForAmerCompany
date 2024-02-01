@@ -1,5 +1,6 @@
 import pickle
 import time
+import traceback
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -100,10 +101,19 @@ class TradingViewParser:
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
 
-        # Wait for items to load (hardcoded AGAIN!!!)
         time.sleep(3)
 
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-title='Super OrderBlock / FVG / BoS Tools by makuchaku & eFe']"))).click()
+        self.driver.implicitly_wait(1)
+
+        try:
+            self.driver.execute("""
+                const el = document.getElementById('overlap-manager-root');
+                if (el) el.remove();
+            """)
+            print("[TradingViewParser] Got popup when selecting Super OrderBlock! Probably not logged in!")
+        except Exception as ex:
+            print(traceback.format_exc())
 
         try:
             hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
@@ -113,7 +123,6 @@ class TradingViewParser:
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find hide indicator button")
 
-        # Hardcoded again (need some way to wait for stuff to load, because hardcoding timeouts is very bad)
         time.sleep(3)
 
         chart = self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "chart-container")))
