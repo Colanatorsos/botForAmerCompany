@@ -107,7 +107,7 @@ class TradingViewParser:
         self.driver.implicitly_wait(1)
 
         try:
-            self.driver.execute("""
+            self.driver.execute_script("""
                 const el = document.getElementById('overlap-manager-root');
                 if (el) el.remove();
             """)
