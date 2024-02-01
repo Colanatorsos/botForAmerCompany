@@ -109,7 +109,9 @@ class TradingViewParser:
         try:
             self.driver.execute_script("""
                 const el = document.getElementById('overlap-manager-root');
-                if (el) el.remove();
+                if (el) {
+                    el.remove();
+                }
             """)
             print("[TradingViewParser] Got popup when selecting Super OrderBlock! Probably not logged in!")
         except Exception as ex:
