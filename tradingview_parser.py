@@ -107,13 +107,22 @@ class TradingViewParser:
         # self.driver.implicitly_wait(1)
 
         try:
-            self.driver.execute_script("""
-                const el = document.getElementById('overlap-manager-root');
-                if (el) {
-                    el.remove();
+            had_popup = self.driver.execute_script("""
+                const popup = document.getElementById('overlap-manager-root');
+                if (popup) {
+                    popup.remove();
+                    return true;
                 }
+                return false;
             """)
-            print("[TradingViewParser] Got popup when selecting Super OrderBlock! Probably not logged in!")
+
+            if had_popup:
+                print("[TradingViewParser] Got popup when selecting Super OrderBlock! Probably not logged in!")
+
+            self.driver.execute_script("""
+                const drawing_toolbar = document.querySelector('[data-name="drawing-toolbar"]');
+                if (drawing_toolbar) drawing_toolbar.remove();
+            """)
         except Exception as ex:
             print(traceback.format_exc())
 
@@ -121,7 +130,8 @@ class TradingViewParser:
             hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
 
             if hide_indicator_button is not None:
-                hide_indicator_button.click()
+                # hide_indicator_button.click()
+                pass
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find hide indicator button")
 
