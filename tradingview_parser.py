@@ -130,8 +130,7 @@ class TradingViewParser:
             hide_indicator_button = self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[title='Скрыть информацию об индикаторах']")))
 
             if hide_indicator_button is not None:
-                # hide_indicator_button.click()
-                pass
+                hide_indicator_button.click()
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find hide indicator button")
 
