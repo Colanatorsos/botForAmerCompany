@@ -1,6 +1,7 @@
 import discord
 import math
 import io
+import threading
 
 from discord.ext.commands import Bot
 
@@ -122,10 +123,15 @@ class DiscordClient(Bot):
         async def future(interaction: discord.Interaction, symbol: str):
             await interaction.response.defer(ephemeral=True)
 
-            parser = TradingViewParser()
-            image_data = parser.get_chart_screenshot(symbol)
+            image_data = None
 
+            def parse_chart():
+                nonlocal image_data
+                parser = TradingViewParser()
+                image_data = parser.get_chart_screenshot(symbol)
+                parser.quit()
+
+            threading.Thread(target=parse_chart).join()
             file = discord.File(io.BytesIO(image_data), "chart.png")
 
             await interaction.followup.send(file=file)
-            parser.quit()

@@ -19,7 +19,7 @@ async def main():
     database = Database("database.sqlite3")
 
     discord_client = DiscordClient(database, intents=discord.Intents.default())
-    parser_client = ParserClient(database, discord_client)
+    parser_client = ParserClient(database, discord_client, chunk_guilds_at_startup=False)
     discord_client.parser_client = parser_client
 
     try:
