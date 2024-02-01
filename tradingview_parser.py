@@ -26,7 +26,7 @@ options.add_argument("--disable-gpu")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_experimental_option("detach", True)
 
-WAIT_FOR_ELEMENT_TIMEOUT = 15
+WAIT_FOR_ELEMENT_TIMEOUT = 5
 COOKIES_FILENAME = "tv_cookies.pkl"
 
 
@@ -90,8 +90,12 @@ class TradingViewParser:
         self.driver.refresh()
 
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-intervals"))).click()
-        self.wait_until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-value='60'][data-role='menuitem']"))).click()
+
+        try:
+            self.wait_until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "[data-value='60'][data-role='menuitem']"))).click()
+        except TimeoutException as ex:
+            print("[TradingViewParser] Couldn't find 1 minute button element")
 
         self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
