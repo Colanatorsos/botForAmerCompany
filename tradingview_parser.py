@@ -96,7 +96,7 @@ class TradingViewParser:
             self.wait_until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "[data-value='60'][data-role='menuitem']"))).click()
         except TimeoutException as ex:
-            print("[TradingViewParser] Couldn't find 1 minute button element")
+            print("[TradingViewParser] Couldn't find 1 hour button element")
 
         # self.wait_until(EC.presence_of_element_located((By.ID, "header-toolbar-indicators"))).click()
         # self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, ".input-qm7Rg5MB"))).send_keys("Super OrderBlock")
@@ -108,6 +108,9 @@ class TradingViewParser:
 
         try:
             had_popup = self.driver.execute_script("""
+                const drawing_toolbar = document.querySelector('[data-name="drawing-toolbar"]');
+                if (drawing_toolbar) drawing_toolbar.remove();
+                
                 const popup = document.getElementById('overlap-manager-root');
                 if (popup) {
                     popup.remove();
@@ -118,11 +121,6 @@ class TradingViewParser:
 
             if had_popup:
                 print("[TradingViewParser] Got popup when selecting Super OrderBlock! Probably not logged in!")
-
-            self.driver.execute_script("""
-                const drawing_toolbar = document.querySelector('[data-name="drawing-toolbar"]');
-                if (drawing_toolbar) drawing_toolbar.remove();
-            """)
         except Exception as ex:
             print(traceback.format_exc())
 
