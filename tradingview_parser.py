@@ -116,9 +116,6 @@ class TradingViewParser:
 
         try:
             had_popup = self.driver.execute_script("""
-                const drawing_toolbar = document.querySelector('[data-name="drawing-toolbar"]');
-                if (drawing_toolbar) drawing_toolbar.remove();
-                
                 const popup = document.getElementById('overlap-manager-root');
                 if (popup) {
                     popup.remove();
@@ -140,7 +137,8 @@ class TradingViewParser:
         except TimeoutException as ex:
             print("[TradingViewParser] Couldn't find hide indicator button")
 
-        time.sleep(3)
+        self.driver.find_element(By.CSS_SELECTOR, "[aria-label='Перекрестие']").click()
+        time.sleep(1)
 
         chart = self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "chart-container")))
         screenshot_data = chart.screenshot_as_png
