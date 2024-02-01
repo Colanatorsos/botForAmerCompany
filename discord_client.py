@@ -11,6 +11,7 @@ from config import Config
 from datetime import datetime
 from finviz_api import get_stock_data
 from tradingview_parser import TradingViewParser
+from thread_with_return_value import ThreadWithReturnValue
 
 
 class DiscordClient(Bot):
@@ -123,18 +124,13 @@ class DiscordClient(Bot):
         async def future(interaction: discord.Interaction, symbol: str):
             await interaction.response.defer(ephemeral=True)
 
-            image_data = None
+            parser = TradingViewParser()
 
-            def parse_chart():
-                nonlocal image_data
-                parser = TradingViewParser()
-                image_data = parser.get_chart_screenshot(symbol)
-                parser.quit()
-
-            thread = threading.Thread(target=parse_chart)
+            thread = ThreadWithReturnValue(target=parser.get_chart_screenshot, args=(symbol,))
             thread.start()
-            thread.join()
+            image_data = thread.join()
 
             file = discord.File(io.BytesIO(image_data), "chart.png")
-
             await interaction.followup.send(file=file)
+
+            parser.quit()
