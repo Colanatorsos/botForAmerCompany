@@ -14,6 +14,49 @@ from tradingview_parser import TradingViewParser
 from thread_with_return_value import ThreadWithReturnValue
 
 
+# TODO: repeating code, refactor!
+class TradingViewChartView(discord.ui.View):
+    def __init__(self, symbol: str):
+        super().__init__()
+        self.symbol = symbol
+
+    @discord.ui.button(label="15m", style=discord.ButtonStyle.green)
+    async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+
+        parser = TradingViewParser()
+        image_data = parser.get_chart_screenshot_in_thread(self.symbol, 15)
+
+        file = discord.File(io.BytesIO(image_data), "chart.png")
+        await interaction.followup.send(file=file)
+
+        parser.quit()
+
+    @discord.ui.button(label="1h", style=discord.ButtonStyle.green)
+    async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+
+        parser = TradingViewParser()
+        image_data = parser.get_chart_screenshot_in_thread(self.symbol, 60)
+
+        file = discord.File(io.BytesIO(image_data), "chart.png")
+        await interaction.followup.send(file=file)
+
+        parser.quit()
+
+    @discord.ui.button(label="1d", style=discord.ButtonStyle.green)
+    async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True)
+
+        parser = TradingViewParser()
+        image_data = parser.get_chart_screenshot_in_thread(self.symbol, 1440)
+
+        file = discord.File(io.BytesIO(image_data), "chart.png")
+        await interaction.followup.send(file=file)
+
+        parser.quit()
+
+
 class DiscordClient(Bot):
     def __init__(self, database: Database, **kwargs):
         super().__init__(command_prefix="/", **kwargs)
@@ -118,19 +161,25 @@ class DiscordClient(Bot):
             await interaction.followup.send(embed=embed, view=view)
         
         @self.tree.command(name="future")
-        @discord.app_commands.choices(symbol=[
-            discord.app_commands.Choice(name="nq1!", value="nq1!")
-        ])
-        async def future(interaction: discord.Interaction, symbol: str):
+        @discord.app_commands.choices(
+            symbol=[
+                discord.app_commands.Choice(name="nq1!", value="nq1!")
+            ],
+            interval_time=[
+                discord.app_commands.Choice(name="15m", value=15),
+                discord.app_commands.Choice(name="1h", value=60),
+                discord.app_commands.Choice(name="24h", value=1440)
+            ]
+        )
+        async def future(interaction: discord.Interaction, symbol: str, interval_time: int):
             await interaction.response.defer(ephemeral=True)
 
             parser = TradingViewParser()
-
-            thread = ThreadWithReturnValue(target=parser.get_chart_screenshot, args=(symbol,))
-            thread.start()
-            image_data = thread.join()
+            image_data = parser.get_chart_screenshot_in_thread(symbol, interval_time)
 
             file = discord.File(io.BytesIO(image_data), "chart.png")
-            await interaction.followup.send(file=file)
+            view = TradingViewChartView(symbol)
+
+            await interaction.followup.send(file=file, view=view)
 
             parser.quit()

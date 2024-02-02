@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
+from thread_with_return_value import ThreadWithReturnValue
 from config import Config
 
 options = webdriver.ChromeOptions()
@@ -85,7 +86,7 @@ class TradingViewParser:
         pickle.dump(self.driver.get_cookies(), open(COOKIES_FILENAME, "wb"))
         self.quit()
 
-    def get_chart_screenshot(self, symbol: str):
+    def get_chart_screenshot(self, symbol: str, interval_time_in_minutes: int):
         self.driver.get(f"https://ru.tradingview.com/chart/?symbol={symbol}")
         self.load_cookies()
         self.driver.refresh()
@@ -101,7 +102,7 @@ class TradingViewParser:
         """
 
         self.wait_until(EC.presence_of_element_located((By.CSS_SELECTOR, "[data-name='legend-source-interval']"))).click()
-        self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "inputWrapper-UGdC69sw"))).send_keys("60")
+        self.wait_until(EC.presence_of_element_located((By.CLASS_NAME, "inputWrapper-UGdC69sw"))).send_keys(str(interval_time_in_minutes))
         self.driver.find_element(By.CLASS_NAME, "form-UGdC69sw").submit()
 
         time.sleep(2)
@@ -143,6 +144,11 @@ class TradingViewParser:
         screenshot_data = chart.screenshot_as_png
 
         return screenshot_data
+
+    def get_chart_screenshot_in_thread(self, symbol: str, interval_time_in_minutes: int):
+        thread = ThreadWithReturnValue(target=self.get_chart_screenshot, args=(symbol, interval_time_in_minutes))
+        thread.start()
+        return thread.join()
 
     def quit(self):
         self.driver.quit()
