@@ -11,7 +11,6 @@ from config import Config
 from datetime import datetime
 from finviz_api import get_stock_data
 from tradingview_parser import TradingViewParser
-from thread_with_return_value import ThreadWithReturnValue
 
 
 # TODO: repeating code, refactor!
@@ -33,7 +32,7 @@ class TradingViewChartView(discord.ui.View):
         parser.quit()
 
     @discord.ui.button(label="1h", style=discord.ButtonStyle.green)
-    async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def chart_1h(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=True)
 
         parser = TradingViewParser()
@@ -45,7 +44,7 @@ class TradingViewChartView(discord.ui.View):
         parser.quit()
 
     @discord.ui.button(label="1d", style=discord.ButtonStyle.green)
-    async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def chart_1d(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=True)
 
         parser = TradingViewParser()
