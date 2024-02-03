@@ -21,7 +21,7 @@ class TradingViewChartView(discord.ui.View):
 
     @discord.ui.button(label="15m", style=discord.ButtonStyle.green)
     async def chart_15m(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
 
         parser = TradingViewParser()
         image_data = parser.get_chart_screenshot_in_thread(self.symbol, 15)
@@ -33,7 +33,7 @@ class TradingViewChartView(discord.ui.View):
 
     @discord.ui.button(label="1h", style=discord.ButtonStyle.green)
     async def chart_1h(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
 
         parser = TradingViewParser()
         image_data = parser.get_chart_screenshot_in_thread(self.symbol, 60)
@@ -45,7 +45,7 @@ class TradingViewChartView(discord.ui.View):
 
     @discord.ui.button(label="1d", style=discord.ButtonStyle.green)
     async def chart_1d(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer()
 
         parser = TradingViewParser()
         image_data = parser.get_chart_screenshot_in_thread(self.symbol, 1440)
@@ -171,7 +171,7 @@ class DiscordClient(Bot):
             ]
         )
         async def future(interaction: discord.Interaction, symbol: str, interval_time: int):
-            await interaction.response.defer(ephemeral=True)
+            await interaction.response.defer()
 
             parser = TradingViewParser()
             image_data = parser.get_chart_screenshot_in_thread(symbol, interval_time)
