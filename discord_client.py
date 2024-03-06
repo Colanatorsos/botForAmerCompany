@@ -1,7 +1,6 @@
 import discord
 import math
 import io
-import threading
 
 from discord.ext.commands import Bot
 
@@ -11,6 +10,8 @@ from config import Config
 from datetime import datetime
 from finviz_api import get_stock_data
 from tradingview_parser import TradingViewParser
+from news_parser import NewsParser
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
 # TODO: repeating code, refactor!
@@ -61,6 +62,12 @@ class DiscordClient(Bot):
         super().__init__(command_prefix="/", **kwargs)
         self.database = database
         self.parser_client = None
+
+        self.news_parser = NewsParser()
+        self.scheduler = AsyncIOScheduler()
+        self.scheduler.add_job(self.news_parser_task, "interval", seconds=Config.NEWS_PARSER_INTERVAL_SECONDS)
+        self.scheduler.start()
+
         self.setup_commands()
 
     async def on_ready(self):
@@ -182,3 +189,19 @@ class DiscordClient(Bot):
             await interaction.followup.send(file=file, view=view)
 
             parser.quit()
+
+    async def news_parser_task(self):
+        parsed_news = {
+            self.news_parser.parse("finviz", "quote.ashx?t=NDAQ&p=d"),
+            self.news_parser.parse("benzinga", "nasdaq"),
+            self.news_parser.parse("benzinga", "nasdaq-100"),
+            self.news_parser.parse("ru.investing", "nq-100-news"),
+            self.news_parser.parse("ru.investing", "nq-100-futures-news"),
+            self.news_parser.parse("investing", "nasdaq-composite-news")
+        }
+
+        post_channel = self.get_channel(Config.NEWS_CHANNEL_ID)
+
+        for news in parsed_news:
+            if news is not None:
+                await post_channel.send(news)

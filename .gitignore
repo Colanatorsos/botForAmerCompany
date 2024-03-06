@@ -5,3 +5,4 @@ venv
 *.sqlite3
 .idea
 tv_cookies.pkl
+last_news_data.json

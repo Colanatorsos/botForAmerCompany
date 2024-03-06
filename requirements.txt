@@ -2,4 +2,5 @@ beautifulsoup4==4.12.3
 discord.py==2.3.2
 Requests==2.31.0
 selenium==4.17.2
+apscheduler==3.10.4
 selfcord.py[voice] @ git+https://github.com/dolfies/discord.py-self@renamed
