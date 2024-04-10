@@ -160,7 +160,10 @@ class DiscordClient(Bot):
             ]
 
             for i in range(len(keys)):
-                embed.add_field(name=keys[i], value=data[keys[i]], inline=True)
+                try:
+                    embed.add_field(name=keys[i], value=data[keys[i]], inline=True)
+                except Exception as ex:
+                    print(f"[DiscordClient] /stock - Failed to add embed field: {ex}")
 
             embed.set_image(url=data["Chart URL"])
 
